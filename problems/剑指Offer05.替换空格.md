@@ -29,7 +29,7 @@ i指向新长度的末尾，j指向旧长度的末尾。
 
 有同学问了，为什么要从后向前填充，从前向后填充不行么？
 
-从前向后填充就是$O(n^2)$的算法了，因为每次添加元素都要将添加元素之后的所有元素向后移动。
+从前向后填充就是O(n^2)的算法了，因为每次添加元素都要将添加元素之后的所有元素向后移动。
 
 **其实很多数组填充类的问题，都可以先预先给数组扩容带填充后的大小，然后在从后向前进行操作。**
 
@@ -74,8 +74,8 @@ public:
 };
 ```
 
-* 时间复杂度：$O(n)$
-* 空间复杂度：$O(1)$
+* 时间复杂度：O(n)
+* 空间复杂度：O(1)
 
 此时算上本题，我们已经做了七道双指针相关的题目了分别是：
 
@@ -120,6 +120,37 @@ for (int i = 0; i < a.size(); i++) {
 
 
 ## 其他语言版本
+
+C：
+```C
+char* replaceSpace(char* s){
+    //统计空格数量
+    int count = 0;
+    int len = strlen(s);
+    for (int i = 0; i < len; i++) {
+        if (s[i] == ' ') {
+            count++;
+        }
+    }
+
+    //为新数组分配空间
+    int newLen = len + count * 2;
+    char* result = malloc(sizeof(char) * newLen + 1);
+    //填充新数组并替换空格
+    for (int i = len - 1, j = newLen - 1; i >= 0; i--, j--) {
+        if (s[i] != ' ') {
+            result[j] = s[i];
+        } else {
+            result[j--] = '0';
+            result[j--] = '2';
+            result[j] = '%';
+        }
+    }
+    result[newLen] = '\0';
+
+    return result;
+}
+```
 
 
 Java：
@@ -260,8 +291,24 @@ class Solution:
             
 ```
 
+```python
+class Solution:
+    def replaceSpace(self, s: str) -> str:
+        # method 1 - Very rude
+        return "%20".join(s.split(" "))
+
+        # method 2 - Reverse the s when counting in for loop, then update from the end.
+        n = len(s)
+        for e, i in enumerate(s[::-1]):
+            print(i, e)
+            if i == " ":
+                s = s[: n - (e + 1)] + "%20" + s[n - e:]
+            print("")
+        return s
+```
 
 javaScript:
+
 ```js
 /**
  * @param {string} s
@@ -295,6 +342,33 @@ javaScript:
 
   // 数组转字符串
   return strArr.join('');
+};
+```
+
+TypeScript：
+
+```typescript
+function replaceSpace(s: string): string {
+    let arr: string[] = s.split('');
+    let spaceNum: number = 0;
+    let oldLength: number = arr.length;
+    for (let i = 0; i < oldLength; i++) {
+        if (arr[i] === ' ') {
+            spaceNum++;
+        }
+    }
+    arr.length = oldLength + 2 * spaceNum;
+    let cur: number = oldLength - 1;
+    for (let i = arr.length - 1; i >= 0; i--, cur--) {
+        if (arr[cur] !== ' ') {
+            arr[i] = arr[cur]
+        } else {
+            arr[i] = '0';
+            arr[--i] = '2';
+            arr[--i] = '%';
+        }
+    }
+    return arr.join('');
 };
 ```
 
@@ -339,8 +413,62 @@ func replaceSpace(_ s: String) -> String {
 }
 ```
 
+Scala:
 
-
+方式一: 双指针
+```scala
+object Solution {
+  def replaceSpace(s: String): String = {
+    var count = 0
+    s.foreach(c => if (c == ' ') count += 1) // 统计空格的数量
+    val sOldSize = s.length // 旧数组字符串长度
+    val sNewSize = s.length + count * 2 // 新数组字符串长度
+    val res = new Array[Char](sNewSize) // 新数组
+    var index = sNewSize - 1 // 新数组索引
+    // 逆序遍历
+    for (i <- (0 until sOldSize).reverse) {
+      if (s(i) == ' ') {
+        res(index) = '0'
+        index -= 1
+        res(index) = '2'
+        index -= 1
+        res(index) = '%'
+      } else {
+        res(index) = s(i)
+      }
+      index -= 1
+    }
+    res.mkString
+  }
+}
+```
+方式二: 使用一个集合，遇到空格就添加%20
+```scala
+object Solution {
+  import scala.collection.mutable.ListBuffer
+  def replaceSpace(s: String): String = {
+    val res: ListBuffer[Char] = ListBuffer[Char]()
+    for (i <- s.indices) {
+      if (s(i) == ' ') {
+        res += '%'
+        res += '2'
+        res += '0'
+      }else{
+        res += s(i)
+      }
+    }
+    res.mkString
+  }
+}
+```
+方式三: 使用map
+```scala
+object Solution {
+  def replaceSpace(s: String): String = {
+    s.map(c => if(c == ' ') "%20" else c).mkString
+  }
+}
+```
 
 
 -----------------------
